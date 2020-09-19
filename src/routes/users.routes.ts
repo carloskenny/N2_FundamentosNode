@@ -13,33 +13,25 @@ const usersRouter = Router();
 const upload = multer(uploadConfig);
 
 usersRouter.get('/', async (request, response) => {
-  try {
-    const userRepository = getRepository(User);
-    const users = await userRepository.find();
-    return response.json(users);
-  } catch (err) {
-    return response.status(400).json({ message: err.message });
-  }
+  const userRepository = getRepository(User);
+  const users = await userRepository.find();
+  return response.json(users);
 });
 
 usersRouter.post('/', async (request, response) => {
-  try {
-    const { name, email, password } = request.body;
+  const { name, email, password } = request.body;
 
-    const createUser = new CreateUserService();
+  const createUser = new CreateUserService();
 
-    const user = await createUser.execute({
-      name,
-      email,
-      password,
-    });
+  const user = await createUser.execute({
+    name,
+    email,
+    password,
+  });
 
-    delete user.password;
+  delete user.password;
 
-    return response.json(user);
-  } catch (err) {
-    return response.status(400).json({ message: err.message });
-  }
+  return response.json(user);
 });
 
 usersRouter.patch(
@@ -47,20 +39,16 @@ usersRouter.patch(
   ensureAuthenticated,
   upload.single('avatar'),
   async (request, response) => {
-    try {
-      const updateUserAvatar = new UpdateUserAvatarService();
+    const updateUserAvatar = new UpdateUserAvatarService();
 
-      const user = await updateUserAvatar.execute({
-        user_id: request.user.id,
-        avatarFilename: request.file.filename,
-      });
+    const user = await updateUserAvatar.execute({
+      user_id: request.user.id,
+      avatarFilename: request.file.filename,
+    });
 
-      delete user.password;
+    delete user.password;
 
-      return response.json(user);
-    } catch (err) {
-      return response.status(400).json({ message: err.message });
-    }
+    return response.json(user);
   },
 );
 
